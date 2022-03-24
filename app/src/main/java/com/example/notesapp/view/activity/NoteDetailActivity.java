@@ -48,9 +48,7 @@ public class NoteDetailActivity extends AppCompatActivity {
     private void initToolbar() {
         setSupportActionBar(binding.toolBar);
         binding.toolBar.setNavigationIcon(R.drawable.ic_back);
-        binding.toolBar.setNavigationOnClickListener(view -> {
-            onBackPressed();
-        });
+        binding.toolBar.setNavigationOnClickListener(view -> onBackPressed());
     }
 
     private void getInfoNote() {
