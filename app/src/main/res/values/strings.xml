@@ -23,4 +23,5 @@
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="check_exit">Nhấn Một Lần Nữa Để Thoát</string>
+    <string name="retry">Thử Lại</string>
 </resources>

@@ -66,24 +66,34 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     private boolean checkEmpty(String title, String content) {
         if (title.isEmpty()) {
-            Snackbar snackbar = Snackbar.make(binding.noteDetailLayout, R.string.input_title, Snackbar.LENGTH_SHORT);
-            View sbView = snackbar.getView();
-            sbView.setBackgroundColor(Color.YELLOW);
-            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(Color.BLUE);
-            snackbar.show();
+            setSnackBar(R.string.input_title);
+            setStatusInput(false);
             return true;
         }
         if (content.isEmpty()) {
-            Snackbar snackbar = Snackbar.make(binding.noteDetailLayout, R.string.input_content, Snackbar.LENGTH_SHORT);
-            View sbView = snackbar.getView();
-            sbView.setBackgroundColor(Color.YELLOW);
-            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setTextColor(Color.BLUE);
-            snackbar.show();
+            setSnackBar(R.string.input_content);
+            setStatusInput(false);
             return true;
         }
         return false;
+    }
+
+    private void setSnackBar(int message){
+        Snackbar snackbar = Snackbar.make(binding.noteDetailLayout, message, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.retry, view -> {
+            setStatusInput(true);
+            snackbar.dismiss();
+        });
+        View sbView = snackbar.getView();
+        sbView.setBackgroundColor(Color.YELLOW);
+        TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.BLUE);
+        snackbar.show();
+    }
+
+    private void setStatusInput(boolean status){
+        binding.titleNote.setEnabled(status);
+        binding.contentNote.setEnabled(status);
     }
 
     // handler toolbar
@@ -107,8 +117,8 @@ public class NoteDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         NoteActivity.notes.clear();
-        String title = binding.getNote().getTitle();
-        String content = binding.getNote().getContent();
+        String title = binding.titleNote.getText().toString();
+        String content = binding.contentNote.getText().toString();
         Date currentTime = new Date();
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -133,6 +143,7 @@ public class NoteDetailActivity extends AppCompatActivity {
     }
 
     //handle back
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBackPressed() {
         super.onBackPressed();
