@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Ghi Chú</string>
+    <string name="note">Ghi Chú</string>
+    <string name="empty_note">Bạn Không Có Ghi Chú Nào !!!</string>
+    <string name="title">Tiêu Đề</string>
+    <string name="input_title">Nhập Tiêu Đề</string>
+    <string name="content">Nội Dung</string>
+    <string name="input_content">Nhập Nội Dung</string>
+    <string name="btn_add">Thêm</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="select_time">Chọn Thời Gian</string>
+    <string name="set_alarm">Đặt Báo Thức</string>
+    <string name="cancel_alarm">Hủy Báo Thức</string>
+    <string name="edit_complete">Sửa Thành Công</string>
+    <string name="add_complete">Thêm Thành Công</string>
+    <string name="delete_complete">Xóa Thành Công</string>
+    <string name="edit">Sửa</string>
+    <string name="add">Thêm</string>
+    <string name="new_note">Ghi Chú Mới</string>
+    <string name="search">Tìm Kiếm</string>
+    <string name="notify">Thông Báo</string>
+    <string name="check_delete_note">Bạn Có Muốn Xóa Ghi Chú Này Không</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="check_exit">Nhấn Một Lần Nữa Để Thoát</string>
+</resources>
