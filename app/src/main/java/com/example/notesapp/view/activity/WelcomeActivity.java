@@ -27,14 +27,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void welcomeDelay() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(WelcomeActivity.this, NoteActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
-            }
+        handler.postDelayed(() -> {
+            Intent intent = new Intent(WelcomeActivity.this, NoteActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
         }, 3000);
     }
 }
