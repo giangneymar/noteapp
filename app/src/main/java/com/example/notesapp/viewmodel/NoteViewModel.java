@@ -1,56 +1,51 @@
 package com.example.notesapp.viewmodel;
 
-import android.content.Context;
+import android.app.Application;
 
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.notesapp.database.NoteDAO;
 import com.example.notesapp.model.Note;
 import com.example.notesapp.repositories.NoteRepository;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class NoteViewModel extends ViewModel {
+public class NoteViewModel extends AndroidViewModel {
+    /*
+    Area : variable
+     */
+
     private final NoteRepository noteRepository;
-    private final NoteDAO noteDAO;
-    private final MutableLiveData<ArrayList<Note>> notesLive;
+    public MutableLiveData<List<Note>> data;
 
-    public NoteViewModel() {
-        noteRepository = new NoteRepository();
-        noteDAO = new NoteDAO();
-        notesLive = new MutableLiveData<>();
+    /*
+    Area : function
+     */
+
+    public NoteViewModel(Application application) {
+        super(application);
+        noteRepository = new NoteRepository(application);
     }
 
-    public MutableLiveData<ArrayList<Note>> getNotesObserver(Context context) {
-        getNotes(context);
-        return notesLive;
+    public MutableLiveData<List<Note>> getNotes() {
+        data = new MutableLiveData<>();
+        if (noteRepository.getNotes().size() > 0) {
+            data.postValue(noteRepository.getNotes());
+        } else {
+            data.postValue(null);
+        }
+        return data;
     }
 
-    public void getNotes(Context context){
-        noteRepository.getNotes(context, notesLive);
+    public void insertNote(Note note) {
+        noteRepository.insertNote(note);
     }
 
-    public void createTableNote(Context context){
-        noteDAO.createTableNote(context);
+    public void updateNote(Note note) {
+        noteRepository.updateNote(note);
     }
 
-    public void insertNote(Context context, String title, String content, String date) {
-        Note note = new Note();
-        note.setTitle(title);
-        note.setContent(content);
-        note.setDate(date);
-        noteDAO.insertNote(context, note.getTitle(), note.getContent(),note.getDate());
-        getNotes(context);
-    }
-
-    public void updateNote(Context context, int id, String newTitle, String newContent, String newDate) {
-        noteDAO.updateNote(context, id, newTitle, newContent, newDate);
-        getNotes(context);
-    }
-
-    public void deleteNote(Context context, int id) {
-        noteDAO.deleteNote(context, id);
-        getNotes(context);
+    public void deleteNote(int id) {
+        noteRepository.deleteNote(id);
     }
 }

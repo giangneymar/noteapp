@@ -1,70 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="note"
             type="com.example.notesapp.model.Note" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/note_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        android:id="@+id/noteDetailLayout"
-        tools:context=".view.activity.NoteDetailActivity">
+        android:background="@drawable/bg_note">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/black"
-            app:title=" "
-            app:layout_constraintBottom_toTopOf="@id/titleNote"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="?attr/homeAsUpIndicator"
-            app:titleTextColor="@color/white" />
-
-        <EditText
-            android:id="@+id/titleNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/input_title"
-            android:paddingStart="@dimen/_10sdp"
-            android:text="@={note.title}"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:textSize="@dimen/_20ssp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:backgroundTint="@color/white"
+            android:text="@string/back"
+            android:textColor="@color/teal_700"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/contentNote"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolBar"
-            tools:ignore="RtlSymmetry" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/add" />
 
-        <EditText
-            android:id="@+id/contentNote"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:backgroundTint="@color/white"
+            android:text="@string/add"
+            android:textColor="@color/red"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/container_note_detail"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:gravity="top|start"
+            android:layout_marginTop="@dimen/_20ssp"
+            android:background="@drawable/background_content_bottom"
+            app:layout_constraintTop_toBottomOf="@id/add" />
+
+        <EditText
+            android:id="@+id/title_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:background="@android:color/transparent"
+            android:hint="@string/input_title"
+            android:text="@={note.title}"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="@dimen/_20ssp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/container_note_detail" />
+
+        <EditText
+            android:id="@+id/content_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            android:background="@android:color/transparent"
             android:hint="@string/input_content"
             android:inputType="textMultiLine"
-            android:paddingStart="@dimen/_10sdp"
             android:scrollbars="vertical"
             android:text="@={note.content}"
-            android:textColor="@color/pale_white"
+            android:textColor="@color/black"
             android:textColorHint="@color/pale_white"
             android:textSize="@dimen/_15ssp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleNote"
-            tools:ignore="RtlSymmetry" />
+            app:layout_constraintTop_toBottomOf="@id/title_note" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

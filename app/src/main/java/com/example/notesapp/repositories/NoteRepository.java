@@ -1,26 +1,42 @@
 package com.example.notesapp.repositories;
 
-import android.content.Context;
-import androidx.lifecycle.MutableLiveData;
+import android.app.Application;
+
 import com.example.notesapp.database.NoteDAO;
+import com.example.notesapp.database.NoteDatabase;
 import com.example.notesapp.model.Note;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class NoteRepository {
-    private final NoteDAO noteDAO;
+    /*
+    Area : variable
+     */
 
-    public NoteRepository(){
-        noteDAO = new NoteDAO();
+    private NoteDAO noteDAO;
+
+    /*
+    Area : function
+     */
+
+    public NoteRepository(Application application) {
+        NoteDatabase db = NoteDatabase.getNoteDatabase(application);
+        noteDAO = db.noteDAO();
     }
 
-    public void getNotes(Context context, MutableLiveData<ArrayList<Note>> notes){
-        ArrayList<Note> notesTemp = noteDAO.getNotes(context);
-        if(notesTemp.size() > 0){
-            notes.setValue(notesTemp);
-        }
-        else {
-            notes.setValue(null);
-        }
+    public List<Note> getNotes() {
+        return noteDAO.getNotes();
+    }
+
+    public void insertNote(Note note) {
+        noteDAO.insertNotes(note);
+    }
+
+    public void updateNote(Note note) {
+        noteDAO.updateNote(note);
+    }
+
+    public void deleteNote(int id) {
+        noteDAO.deleteNote(id);
     }
 }

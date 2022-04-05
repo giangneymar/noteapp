@@ -1,83 +1,87 @@
 package com.example.notesapp.view.activity;
 
-import static com.example.notesapp.utils.KeyConstants.CODE_CHECK_ICON;
-import static com.example.notesapp.utils.KeyConstants.NOTE_CHECK_ICON;
-import static com.example.notesapp.utils.KeyConstants.NOTE_INFO;
+import static com.example.notesapp.utils.KeyConstant.CODE_CHECK_ICON;
+import static com.example.notesapp.utils.KeyConstant.NOTE_CHECK_ICON;
+import static com.example.notesapp.utils.KeyConstant.NOTE_INFO;
 
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.notesapp.R;
 import com.example.notesapp.databinding.ActivityNoteBinding;
+import com.example.notesapp.databinding.DialogDeleteBinding;
 import com.example.notesapp.model.Note;
 import com.example.notesapp.view.adapter.NoteAdapter;
 import com.example.notesapp.viewmodel.NoteViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteClickListener {
+    /*
+    Area : variable
+     */
+
     private ActivityNoteBinding binding;
     private NoteViewModel viewModel;
     private long backPressed;
-    @SuppressLint("StaticFieldLeak")
-    public static NoteAdapter noteAdapter;
-    public static ArrayList<Note> notes;
+    private NoteAdapter noteAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_note);
-        initNoteList();
-        initViewModel();
-        initRecyclerView();
-        initToolbar();
-        initSearchView();
-    }
+    /*
+    Area : function
+     */
 
-    private void initNoteList() {
-        if (notes == null) {
-            notes = new ArrayList<>();
-        }
-    }
-
-    private void initViewModel() {
+    private void initAll() {
         viewModel = new ViewModelProvider(this).get(NoteViewModel.class);
-        initTable();
-        getNotes();
+        getObserveNotes();
+        setDateNow();
     }
 
-    private void initRecyclerView() {
+    private void getObserveNotes() {
+        viewModel.getNotes().observe(this, this::setRecyclerView);
+    }
+
+    private void setRecyclerView(List<Note> notes) {
         if (noteAdapter == null) {
             noteAdapter = new NoteAdapter(this, notes);
         }
-        binding.listNote.setLayoutManager(new GridLayoutManager(this, 1));
+        binding.listNote.setLayoutManager(new LinearLayoutManager(this));
         binding.listNote.setAdapter(noteAdapter);
     }
 
-    private void initToolbar() {
-        setSupportActionBar(binding.toolBar);
+    private void setDateNow() {
+        Date currentTime = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String date = dateFormat.format(currentTime);
+        binding.dateNow.setText(date);
     }
 
-    private void initSearchView() {
+    private void onClick() {
+        binding.add.setOnClickListener(view -> {
+            Intent intent = new Intent(NoteActivity.this, NoteDetailActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        });
+    }
+
+    private void setSearchView() {
+        EditText txtSearch = ((EditText) binding.search.findViewById(androidx.appcompat.R.id.search_src_text));
+        txtSearch.setHintTextColor(Color.LTGRAY);
+        txtSearch.setTextColor(Color.WHITE);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         binding.search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -86,6 +90,7 @@ public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteC
                 noteAdapter.getFilter().filter(query);
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 noteAdapter.getFilter().filter(newText);
@@ -94,54 +99,22 @@ public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteC
         });
     }
 
-    private void initTable() {
-        viewModel.createTableNote(getApplicationContext());
-    }
+    /*
+    Area : override
+     */
 
-    private void getNotes() {
-        viewModel.getNotesObserver(this).observe(this, notesLive -> {
-
-        });
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private void deleteDialog(int position) {
-        BottomSheetDialog dialog = new BottomSheetDialog(NoteActivity.this, R.style.DeleteDialogStyle);
-        View view = LayoutInflater.from(NoteActivity.this).inflate(R.layout.dialog_delete, findViewById(R.id.dialogDelete));
-        dialog.setContentView(view);
-        Button btnYes = view.findViewById(R.id.btnYes);
-        Button btnNo = view.findViewById(R.id.btnNo);
-        btnYes.setOnClickListener(viewYes -> {
-            viewModel.deleteNote(getApplicationContext(), position);
-            noteAdapter.notifyDataSetChanged();
-            dialog.dismiss();
-        });
-        btnNo.setOnClickListener(viewNo -> {
-            dialog.dismiss();
-        });
-        dialog.show();
-    }
-
-    //handle event in toolbar
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar_note_activity, menu);
-        return true;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityNoteBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        initAll();
+        setSearchView();
+        onClick();
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menuNewNote) {
-            Intent intent = new Intent(NoteActivity.this, NoteDetailActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    //handle click listeners
-    @Override
-    public void itemClick(Note note) {
+    public void onItemClick(Note note) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(NOTE_INFO, note);
         Intent intent = new Intent(NoteActivity.this, NoteDetailActivity.class);
@@ -153,11 +126,17 @@ public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteC
 
     @Override
     public void deleteNote(Note note) {
-        notes.clear();
-        deleteDialog(note.getId());
+        BottomSheetDialog dialog = new BottomSheetDialog(NoteActivity.this, R.style.DeleteDialogStyle);
+        DialogDeleteBinding bindingDialog = DialogDeleteBinding.inflate(getLayoutInflater());
+        dialog.setContentView(bindingDialog.getRoot());
+        bindingDialog.yes.setOnClickListener(viewYes -> {
+            viewModel.deleteNote(note.getId());
+            dialog.dismiss();
+        });
+        bindingDialog.no.setOnClickListener(viewNo -> dialog.dismiss());
+        dialog.show();
     }
 
-    //handle back
     @Override
     public void onBackPressed() {
         if (backPressed + 2000 > System.currentTimeMillis()) {

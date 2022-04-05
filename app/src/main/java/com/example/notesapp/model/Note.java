@@ -3,11 +3,24 @@ package com.example.notesapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "Note")
 public class Note implements Parcelable {
+    /*
+    Area : variable
+     */
+
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String title;
     private String content;
     private String date;
+
+    /*
+    Area : function
+     */
 
     public Note() {
     }
@@ -69,6 +82,10 @@ public class Note implements Parcelable {
         content = in.readString();
         date = in.readString();
     }
+
+    /*
+    Area : override
+     */
 
     @Override
     public int describeContents() {

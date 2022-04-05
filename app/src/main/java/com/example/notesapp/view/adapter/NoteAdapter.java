@@ -1,6 +1,6 @@
 package com.example.notesapp.view.adapter;
 
-import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -13,34 +13,65 @@ import com.example.notesapp.databinding.ItemNotesBinding;
 import com.example.notesapp.model.Note;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> implements Filterable{
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> implements Filterable {
+    /*
+    Area : variable
+     */
 
-    private ArrayList<Note> notes;
-    private final ArrayList<Note> notesTemp;
+    private List<Note> notes;
+    private final List<Note> notesTemp;
     private final NoteClickListener clickListener;
 
-    public NoteAdapter(NoteClickListener clickListener, ArrayList<Note> notes) {
-        this.clickListener = clickListener;
-        this.notes = notes;
-        this.notesTemp = notes;
-    }
+    /*
+    Area : inner class
+     */
 
     public class ItemHolder extends RecyclerView.ViewHolder {
+        /*
+        Area : variable
+         */
         private final ItemNotesBinding binding;
+
+        /*
+        Area : function
+         */
 
         public ItemHolder(ItemNotesBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bindNote(Note note) {
-            binding.getRoot().setOnClickListener(view -> clickListener.itemClick(note));
+        public void bindNote(int position) {
+            Note note = notes.get(position);
+            binding.setNote(note);
+            binding.getRoot().setOnClickListener(view -> clickListener.onItemClick(note));
             binding.imgDelete.setOnClickListener(view -> clickListener.deleteNote(note));
+            int[] colors = {Color.rgb(0, 255, 0),
+                    Color.rgb(51, 153, 255),
+                    Color.YELLOW,
+                    Color.rgb(229, 204, 255),
+                    Color.rgb(255, 204, 204)};
+            binding.itemNote.setCardBackgroundColor(colors[(int) Math.floor(Math.random() * colors.length)]);
+            binding.executePendingBindings();
         }
     }
 
-    //handle recyclerview
+    /*
+    Area : function
+     */
+
+    public NoteAdapter(NoteClickListener clickListener, List<Note> notes) {
+        this.clickListener = clickListener;
+        this.notes = notes;
+        this.notesTemp = notes;
+    }
+
+    /*
+    Area : override
+     */
+
     @NonNull
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,16 +82,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
-        holder.bindNote(notes.get(position));
-        holder.binding.setNote(notes.get(position));
+        holder.bindNote(position);
     }
 
     @Override
     public int getItemCount() {
+        if (notes == null) {
+            return 0;
+        }
         return notes.size();
     }
 
-    //handle event search
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -82,7 +114,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
                 filterResults.values = notes;
                 return filterResults;
             }
-            @SuppressLint("NotifyDataSetChanged")
+
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                 notes = (ArrayList<Note>) filterResults.values;
@@ -91,8 +123,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
         };
     }
 
-    public interface NoteClickListener{
-        void itemClick(Note note);
+    public interface NoteClickListener {
+        void onItemClick(Note note);
+
         void deleteNote(Note note);
     }
 }
