@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/noteLayout"
+        android:id="@+id/note_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_note">
@@ -18,7 +18,6 @@
             android:text="@string/note"
             android:textColor="@color/white"
             android:textSize="@dimen/_20ssp"
-            app:layout_constraintBottom_toTopOf="@id/date_now"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,7 +30,6 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_15ssp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/app_name" />
 
@@ -41,7 +39,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_20sdp"
             android:background="@drawable/border_search_view"
-            app:layout_constraintBottom_toTopOf="@id/container_note"
             app:layout_constraintTop_toBottomOf="@id/date_now"
             app:queryBackground="@null"
             app:iconifiedByDefault="false"
@@ -53,9 +50,8 @@
             android:id="@+id/container_note"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_30sdp"
             android:background="@drawable/background_content_bottom"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search">
 
         </View>

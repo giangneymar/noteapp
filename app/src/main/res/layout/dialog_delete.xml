@@ -17,7 +17,6 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_17ssp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/yes"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
@@ -30,7 +29,6 @@
             android:text="@string/yes"
             android:textStyle="bold"
             app:cornerRadius="@dimen/_10sdp"
-            app:layout_constraintBottom_toTopOf="@id/no"
             app:layout_constraintTop_toBottomOf="@id/check_delete_note" />
 
         <com.google.android.material.button.MaterialButton

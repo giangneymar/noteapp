@@ -21,8 +21,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
      */
 
     private List<Note> notes;
-    private final List<Note> notesTemp;
-    private final NoteClickListener clickListener;
+    private List<Note> notesTemp;
+    private NoteClickListener clickListener;
 
     /*
     Area : inner class
@@ -46,6 +46,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
         public void bindNote(int position) {
             Note note = notes.get(position);
             binding.setNote(note);
+            onClick(note);
+            binding.executePendingBindings();
+        }
+
+        public void onClick(Note note) {
             binding.getRoot().setOnClickListener(view -> clickListener.onItemClick(note));
             binding.imgDelete.setOnClickListener(view -> clickListener.deleteNote(note));
             int[] colors = {Color.rgb(0, 255, 0),
@@ -54,7 +59,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
                     Color.rgb(229, 204, 255),
                     Color.rgb(255, 204, 204)};
             binding.itemNote.setCardBackgroundColor(colors[(int) Math.floor(Math.random() * colors.length)]);
-            binding.executePendingBindings();
         }
     }
 
@@ -123,9 +127,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
         };
     }
 
+    /*
+    Area : interface
+     */
+
     public interface NoteClickListener {
         void onItemClick(Note note);
-
         void deleteNote(Note note);
     }
 }

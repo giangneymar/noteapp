@@ -22,8 +22,14 @@ public class Note implements Parcelable {
     Area : function
      */
 
-    public Note() {
+    protected Note(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        content = in.readString();
+        date = in.readString();
     }
+
+    public Note(){}
 
     public Note(int id, String title, String content, String date) {
         this.id = id;
@@ -75,13 +81,6 @@ public class Note implements Parcelable {
             return new Note[size];
         }
     };
-
-    protected Note(Parcel in) {
-        id = in.readInt();
-        title = in.readString();
-        content = in.readString();
-        date = in.readString();
-    }
 
     /*
     Area : override

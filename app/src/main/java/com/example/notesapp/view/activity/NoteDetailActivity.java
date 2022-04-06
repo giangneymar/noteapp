@@ -1,11 +1,15 @@
 package com.example.notesapp.view.activity;
 
-import static com.example.notesapp.utils.KeyConstant.CODE_CHECK_ICON;
-import static com.example.notesapp.utils.KeyConstant.NOTE_CHECK_ICON;
+import static com.example.notesapp.utils.KeyConstant.CODE_CHECK_EVENT;
+import static com.example.notesapp.utils.KeyConstant.NOTES;
+import static com.example.notesapp.utils.KeyConstant.NOTE_CHECK_EVENT;
 import static com.example.notesapp.utils.KeyConstant.NOTE_INFO;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,13 +17,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.notesapp.R;
+import com.example.notesapp.databinding.ActivityNoteBinding;
 import com.example.notesapp.databinding.ActivityNoteDetailBinding;
 import com.example.notesapp.model.Note;
 import com.example.notesapp.viewmodel.NoteViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class NoteDetailActivity extends AppCompatActivity {
     /*
@@ -38,27 +45,35 @@ public class NoteDetailActivity extends AppCompatActivity {
     }
 
     private void onClick() {
-        onClickAddEditNote();
-        onClickBack();
+        binding.add.setOnClickListener(view -> checkEventUpdate(false));
+        if (getIntent().getIntExtra(NOTE_CHECK_EVENT, -1) == CODE_CHECK_EVENT) {
+            binding.add.setText(R.string.edit);
+            getInfoNote();
+            binding.add.setOnClickListener(view -> checkEventUpdate(true));
+        }
+        binding.back.setOnClickListener(view -> onBackPressed());
     }
 
-    private void onClickAddEditNote() {
-        binding.add.setOnClickListener(view -> checkEvent(false));
-        if (getIntent().getIntExtra(NOTE_CHECK_ICON, -1) == CODE_CHECK_ICON) {
-            binding.add.setText("Sửa");
-            getInfoNote();
-            binding.add.setOnClickListener(view -> checkEvent(true));
+    private void getInfoNote() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle == null) {
+            return;
+        }
+        Note note = bundle.getParcelable(NOTE_INFO);
+        if (note != null) {
+            noteTemp = note;
+            binding.setNote(note);
         }
     }
 
-    private void checkEvent(boolean isUpdate) {
+    private void checkEventUpdate(boolean isUpdate) {
         String title = binding.titleNote.getText().toString().trim();
         String content = binding.contentNote.getText().toString().trim();
         Date currentTime = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.format_time), Locale.ENGLISH);
         String date = dateFormat.format(currentTime);
         if (title.isEmpty()) {
-            setSnackBar(R.string.input_title);
+            setSnackBar( R.string.input_title);
             setStatusInput(false);
         } else if (content.isEmpty()) {
             setSnackBar(R.string.input_content);
@@ -74,8 +89,20 @@ public class NoteDetailActivity extends AppCompatActivity {
             } else {
                 viewModel.insertNote(note);
             }
-            finish();
+            sendDataToNoteActivity();
         }
+    }
+
+    private void sendDataToNoteActivity() {
+        viewModel.getNotes().observe(this, notes -> {
+            ArrayList<Note> noteArrayList = new ArrayList<>(notes);
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(NOTES, noteArrayList);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtras(bundle);
+            setResult(RESULT_OK,resultIntent);
+            finish();
+        });
     }
 
     private void setSnackBar(int message) {
@@ -87,29 +114,13 @@ public class NoteDetailActivity extends AppCompatActivity {
         View sbView = snackbar.getView();
         sbView.setBackgroundColor(Color.YELLOW);
         TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-        textView.setTextColor(Color.BLUE);
+        textView.setTextColor(Color.RED);
         snackbar.show();
     }
 
     private void setStatusInput(boolean status) {
         binding.titleNote.setEnabled(status);
         binding.contentNote.setEnabled(status);
-    }
-
-    private void getInfoNote() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle == null) {
-            return;
-        }
-        Note note = bundle.getParcelable(NOTE_INFO);
-        if (note != null) {
-            noteTemp = note;
-            binding.setNote(note);
-        }
-    }
-
-    private void onClickBack() {
-        binding.back.setOnClickListener(view -> onBackPressed());
     }
 
     /*

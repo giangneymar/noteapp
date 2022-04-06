@@ -6,11 +6,6 @@
     <string name="input_title">Nhập Tiêu Đề</string>
     <string name="content">Nội Dung</string>
     <string name="input_content">Nhập Nội Dung</string>
-    <string name="btn_add">Thêm</string>
-    <string name="btn_cancel">Hủy</string>
-    <string name="select_time">Chọn Thời Gian</string>
-    <string name="set_alarm">Đặt Báo Thức</string>
-    <string name="cancel_alarm">Hủy Báo Thức</string>
     <string name="edit_complete">Sửa Thành Công</string>
     <string name="add_complete">Thêm Thành Công</string>
     <string name="delete_complete">Xóa Thành Công</string>
@@ -25,4 +20,6 @@
     <string name="check_exit">Nhấn Một Lần Nữa Để Thoát</string>
     <string name="retry">Thử Lại</string>
     <string name="back">Trở Lại</string>
+    <string name="format_time">dd/MM/yyyy - HH:mm:ss</string>
+    <string name="format_time_short">dd/MM/yyyy</string>
 </resources>

@@ -15,8 +15,7 @@ public class NoteViewModel extends AndroidViewModel {
     Area : variable
      */
 
-    private final NoteRepository noteRepository;
-    public MutableLiveData<List<Note>> data;
+    private  NoteRepository noteRepository;
 
     /*
     Area : function
@@ -28,7 +27,7 @@ public class NoteViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<List<Note>> getNotes() {
-        data = new MutableLiveData<>();
+        MutableLiveData<List<Note>> data = new MutableLiveData<>();
         if (noteRepository.getNotes().size() > 0) {
             data.postValue(noteRepository.getNotes());
         } else {
