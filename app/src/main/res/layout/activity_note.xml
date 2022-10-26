@@ -3,75 +3,82 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/note_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_note">
+        android:background="@color/white">
 
         <TextView
-            android:id="@+id/app_name"
+            android:id="@+id/hello"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:fontFamily="@font/uvn_cake"
-            android:text="@string/note"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_20ssp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/inter_black"
+            android:text="Hey Giang,"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/date_now"
+            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:fontFamily="@font/uvn_regular"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_15ssp"
-            android:textStyle="bold"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/app_name" />
+            app:layout_constraintTop_toBottomOf="@id/hello" />
 
-        <androidx.appcompat.widget.SearchView
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/giang"
+            app:layout_constraintBottom_toTopOf="@id/search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
             android:id="@+id/search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_20sdp"
-            android:background="@drawable/border_search_view"
-            app:layout_constraintTop_toBottomOf="@id/date_now"
-            app:queryBackground="@null"
-            app:iconifiedByDefault="false"
-            app:searchIcon="@null"
-            app:queryHint="@string/search"
-            app:submitBackground="@null"/>
+            android:layout_height="40dp"
+            android:layout_margin="20dp"
+            android:background="#DDE0E6"
+            android:fontFamily="@font/inter_light"
+            android:hint="Tìm kiếm"
+            android:paddingStart="40dp"
+            android:textCursorDrawable="@drawable/color_cursor"
+            app:layout_constraintTop_toBottomOf="@id/time" />
 
-        <View
-            android:id="@+id/container_note"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_30sdp"
-            android:background="@drawable/background_content_bottom"
-            app:layout_constraintTop_toBottomOf="@id/search">
-
-        </View>
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@id/search"
+            app:layout_constraintStart_toStartOf="@id/search"
+            app:layout_constraintTop_toTopOf="@id/search" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_note"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="@id/container_note" />
+            app:layout_constraintTop_toBottomOf="@id/search" />
 
         <ImageView
             android:id="@+id/add"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:layout_marginBottom="@dimen/_30sdp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="30dp"
             android:src="@drawable/ic_add"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

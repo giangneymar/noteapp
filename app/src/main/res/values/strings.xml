@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Ghi Chú</string>
-    <string name="note">Ghi Chú</string>
     <string name="empty_note">Bạn Không Có Ghi Chú Nào !!!</string>
     <string name="title">Tiêu Đề</string>
     <string name="input_title">Nhập Tiêu Đề</string>
@@ -20,6 +19,9 @@
     <string name="check_exit">Nhấn Một Lần Nữa Để Thoát</string>
     <string name="retry">Thử Lại</string>
     <string name="back">Trở Lại</string>
-    <string name="format_time">dd/MM/yyyy - HH:mm:ss</string>
+    <string name="format_time">dd/MM/yyyy</string>
     <string name="format_time_short">dd/MM/yyyy</string>
+    <string name="good_morning">Chào buổi sáng</string>
+    <string name="good_afternoon">Buổi chiều vui vẻ nhé !!!</string>
+    <string name="good_evening">Tối rồi, bạn đang làm gì vậy ???</string>
 </resources>

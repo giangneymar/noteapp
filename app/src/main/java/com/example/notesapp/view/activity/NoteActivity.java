@@ -1,31 +1,32 @@
 package com.example.notesapp.view.activity;
 
-import static com.example.notesapp.utils.KeyConstant.CODE_CHECK_EVENT;
-import static com.example.notesapp.utils.KeyConstant.NOTES;
-import static com.example.notesapp.utils.KeyConstant.NOTE_CHECK_EVENT;
-import static com.example.notesapp.utils.KeyConstant.NOTE_INFO;
+import static com.example.notesapp.utils.KeyConstant.SAVE_AVATAR;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.SearchManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.notesapp.R;
 import com.example.notesapp.databinding.ActivityNoteBinding;
@@ -33,144 +34,138 @@ import com.example.notesapp.databinding.DialogDeleteBinding;
 import com.example.notesapp.model.Note;
 import com.example.notesapp.view.adapter.NoteAdapter;
 import com.example.notesapp.viewmodel.NoteViewModel;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Calendar;
 
 public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteClickListener {
-    /*
-    Area : variable
-     */
 
     private ActivityNoteBinding binding;
     private NoteViewModel viewModel;
     private long backPressed;
-    private NoteAdapter noteAdapter;
-
-    /*
-    Area : function
-     */
-
-    private void initAll() {
-        viewModel = new ViewModelProvider(this).get(NoteViewModel.class);
-        getObserveNotes();
-        setDateNow();
-    }
-
-    private void getObserveNotes() {
-        viewModel.getNotes().observe(NoteActivity.this, this::setRecyclerView);
-    }
-
-    private void setRecyclerView(List<Note> notes) {
-        noteAdapter = new NoteAdapter(this, notes);
-        binding.listNote.setLayoutManager(new LinearLayoutManager(this));
-        binding.listNote.setAdapter(noteAdapter);
-    }
-
-    private void setDateNow() {
-        Date currentTime = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.format_time_short), Locale.ENGLISH);
-        String date = dateFormat.format(currentTime);
-        binding.dateNow.setText(date);
-    }
-
-    private void setSearchView() {
-        EditText txtSearch = ((EditText) binding.search.findViewById(androidx.appcompat.R.id.search_src_text));
-        txtSearch.setHintTextColor(Color.LTGRAY);
-        txtSearch.setTextColor(Color.WHITE);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        binding.search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        binding.search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                noteAdapter.getFilter().filter(query);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                noteAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-    }
-
-    private void onClick() {
-        binding.add.setOnClickListener(view -> {
-            Intent intent = new Intent(NoteActivity.this, NoteDetailActivity.class);
-            launcherIntent.launch(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        });
-    }
-
-    private void setSnackBar(int message, int backgroundColor, int textColor) {
-        Snackbar snackbar = Snackbar.make(binding.noteLayout, message, Snackbar.LENGTH_SHORT);
-        View sbView = snackbar.getView();
-        sbView.setBackgroundColor(backgroundColor);
-        TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-        textView.setTextColor(textColor);
-        snackbar.show();
-    }
-
-    private final ActivityResultLauncher<Intent> launcherIntent = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        Bundle bundle = data.getExtras();
-                        if (bundle != null) {
-                            ArrayList<Note> noteArrayList = bundle.getParcelableArrayList(NOTES);
-                            setRecyclerView(noteArrayList);
-                        }
-                    }
-                }
-            }
-    );
-
-    /*
-    Area : override
-     */
+    private NoteAdapter adapter;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNoteBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        initAll();
-        setSearchView();
+        init();
+        getNotes();
         onClick();
+        setAvatar();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getNotes();
+    }
+
+    private void setAvatar() {
+        String image = sharedPreferences.getString(SAVE_AVATAR, "");
+        if (image.equals("")) {
+            binding.avatar.setImageResource(R.drawable.giang);
+        } else {
+            byte[] imageAsBytes = Base64.decode(image.getBytes(), Base64.DEFAULT);
+            binding.avatar.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        }
+    }
+
+    private void init() {
+        if (viewModel == null) {
+            viewModel = new ViewModelProvider(this).get(NoteViewModel.class);
+        }
+
+        if (adapter == null) {
+            adapter = new NoteAdapter(this);
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(binding.getRoot().getContext());
+            layoutManager.setFlexDirection(FlexDirection.ROW);
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+            layoutManager.setAlignItems(AlignItems.FLEX_START);
+            binding.listNote.setLayoutManager(layoutManager);
+            binding.listNote.setAdapter(adapter);
+        }
+
+        sharedPreferences = getSharedPreferences(SAVE_AVATAR, Context.MODE_PRIVATE);
+        setTime();
+    }
+
+    private void setTime() {
+        int hour = Calendar.getInstance().getTime().getHours();
+        if (hour >= 0 && hour <= 11) {
+            binding.time.setText(R.string.good_morning);
+        } else if (hour >= 12 && hour <= 18) {
+            binding.time.setText(R.string.good_afternoon);
+        } else {
+            binding.time.setText(R.string.good_evening);
+        }
+    }
+
+    private void getNotes() {
+        viewModel.getNotes();
+        viewModel.getLiveNotes().observe(NoteActivity.this, notes -> {
+            adapter.setData(notes);
+        });
+    }
+
+    private void onClick() {
+        binding.add.setOnClickListener(view -> {
+            NoteDetailActivity.start(NoteActivity.this, "add");
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        });
+        binding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                search(editable.toString());
+            }
+        });
+        binding.avatar.setOnClickListener(view -> pickImage());
+    }
+
+    private void search(String key) {
+        viewModel.getSearchNote(key);
+        viewModel.getLiveSearchNote().observe(this, notes -> adapter.setData(notes));
     }
 
     @Override
     public void onItemClick(Note note) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(NOTE_INFO, note);
-        Intent intent = new Intent(NoteActivity.this, NoteDetailActivity.class);
-        intent.putExtras(bundle);
-        intent.putExtra(NOTE_CHECK_EVENT, CODE_CHECK_EVENT);
-        launcherIntent.launch(intent);
+        NoteDetailActivity.start(NoteActivity.this, "edit", note);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @Override
     public void deleteNote(Note note) {
-        BottomSheetDialog dialog = new BottomSheetDialog(NoteActivity.this, R.style.DeleteDialogStyle);
-        DialogDeleteBinding bindingDialog = DialogDeleteBinding.inflate(getLayoutInflater());
-        dialog.setContentView(bindingDialog.getRoot());
-        bindingDialog.yes.setOnClickListener(viewYes -> {
+        Dialog dialog = new Dialog(this);
+        DialogDeleteBinding binding = DialogDeleteBinding.inflate(getLayoutInflater());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(binding.getRoot());
+
+        binding.ok.setOnClickListener(view -> {
             viewModel.deleteNote(note.getId());
-            getObserveNotes();
+            getNotes();
             dialog.dismiss();
-            setSnackBar(R.string.delete_complete, Color.RED, Color.WHITE);
         });
-        bindingDialog.no.setOnClickListener(viewNo -> dialog.dismiss());
-        dialog.show();
+        binding.cancel.setOnClickListener(view -> dialog.dismiss());
+
+        setWindow(dialog);
     }
 
     @Override
@@ -178,8 +173,58 @@ public class NoteActivity extends AppCompatActivity implements NoteAdapter.NoteC
         if (backPressed + 2000 > System.currentTimeMillis()) {
             super.onBackPressed();
         } else {
-            setSnackBar(R.string.check_exit, Color.YELLOW, Color.BLUE);
+            Toast.makeText(this, R.string.check_exit, Toast.LENGTH_SHORT).show();
         }
         backPressed = System.currentTimeMillis();
     }
+
+    private void setWindow(Dialog dialog) {
+        Window window = dialog.getWindow();
+        if (window == null) {
+            return;
+        }
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        WindowManager.LayoutParams windowAttributes = window.getAttributes();
+        windowAttributes.gravity = Gravity.CENTER;
+        window.setAttributes(windowAttributes);
+        dialog.show();
+    }
+
+    private void pickImage() {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        pickImage.launch(photoPickerIntent);
+    }
+
+    private ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            try {
+                                final Uri imageUri = data.getData();
+                                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                                binding.avatar.setImageBitmap(selectedImage);
+
+                                ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                                selectedImage.compress(Bitmap.CompressFormat.PNG, 100, bao);
+                                byte[] b = bao.toByteArray();
+                                String encoded = Base64.encodeToString(b, Base64.DEFAULT);
+
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString(SAVE_AVATAR, encoded);
+                                editor.apply();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
 }

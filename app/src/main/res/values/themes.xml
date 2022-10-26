@@ -14,12 +14,11 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="DeleteDialogStyle" parent="Theme.Design.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/Style</item>
-    </style>
-
-    <style name="Style" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/delete_shape</item>
+    <style name="Theme.NotesApp.FullScreen">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
 </resources>

@@ -1,10 +1,10 @@
 package com.example.notesapp.view.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,66 +15,61 @@ import com.example.notesapp.model.Note;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> implements Filterable {
-    /*
-    Area : variable
-     */
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> {
 
-    private List<Note> notes;
-    private List<Note> notesTemp;
-    private NoteClickListener clickListener;
-
-    /*
-    Area : inner class
-     */
+    private final List<Note> notes;
+    private final NoteClickListener clickListener;
 
     public class ItemHolder extends RecyclerView.ViewHolder {
-        /*
-        Area : variable
-         */
-        private final ItemNotesBinding binding;
 
-        /*
-        Area : function
-         */
+        private final ItemNotesBinding binding;
 
         public ItemHolder(ItemNotesBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bindNote(int position) {
-            Note note = notes.get(position);
-            binding.setNote(note);
+        public void setData(Note note) {
+            binding.title.setText(note.getTitle());
+            binding.content.setText(note.getContent());
+            binding.date.setText(note.getDate());
             onClick(note);
-            binding.executePendingBindings();
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         public void onClick(Note note) {
             binding.getRoot().setOnClickListener(view -> clickListener.onItemClick(note));
-            binding.imgDelete.setOnClickListener(view -> clickListener.deleteNote(note));
-            int[] colors = {Color.rgb(0, 255, 0),
-                    Color.rgb(51, 153, 255),
+            binding.delete.setOnClickListener(view -> {
+                clickListener.deleteNote(note);
+            });
+            binding.getRoot().setOnLongClickListener(view -> {
+                clickListener.deleteNote(note);
+                return true;
+            });
+            int[] colors = {Color.rgb(192, 192, 192),
+                    Color.rgb(198, 226, 255),
                     Color.YELLOW,
-                    Color.rgb(229, 204, 255),
-                    Color.rgb(255, 204, 204)};
+                    Color.rgb(255, 250, 240),
+                    Color.rgb(245, 245, 220),
+                    Color.rgb(255, 218, 185),
+                    Color.rgb(238, 224, 229),
+                    Color.rgb(224, 255, 255),
+                    Color.rgb(255, 246, 143)};
             binding.itemNote.setCardBackgroundColor(colors[(int) Math.floor(Math.random() * colors.length)]);
         }
     }
 
-    /*
-    Area : function
-     */
-
-    public NoteAdapter(NoteClickListener clickListener, List<Note> notes) {
+    public NoteAdapter(NoteClickListener clickListener) {
         this.clickListener = clickListener;
-        this.notes = notes;
-        this.notesTemp = notes;
+        this.notes = new ArrayList<>();
     }
 
-    /*
-    Area : override
-     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void setData(List<Note> notes) {
+        this.notes.clear();
+        this.notes.addAll(notes);
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
@@ -86,53 +81,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> im
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
-        holder.bindNote(position);
+        Note note = notes.get(position);
+        holder.setData(note);
     }
 
     @Override
     public int getItemCount() {
-        if (notes == null) {
-            return 0;
-        }
         return notes.size();
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String search = charSequence.toString();
-                if (search.isEmpty()) {
-                    notes = notesTemp;
-                } else {
-                    ArrayList<Note> mNotes = new ArrayList<>();
-                    for (Note note : notesTemp) {
-                        if (note.getTitle().toLowerCase().contains(search.toLowerCase())) {
-                            mNotes.add(note);
-                        }
-                    }
-                    notes = mNotes;
-                }
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = notes;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                notes = (ArrayList<Note>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
-    }
-
-    /*
-    Area : interface
-     */
-
     public interface NoteClickListener {
         void onItemClick(Note note);
+
         void deleteNote(Note note);
     }
 }

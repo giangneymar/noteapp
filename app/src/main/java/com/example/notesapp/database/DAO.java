@@ -10,7 +10,7 @@ import com.example.notesapp.model.Note;
 import java.util.List;
 
 @Dao
-public interface NoteDAO {
+public interface DAO {
     @Insert
     void insertNotes(Note... note);
 
@@ -22,5 +22,8 @@ public interface NoteDAO {
 
     @Query("SELECT * FROM Note")
     List<Note> getNotes();
+
+    @Query("SELECT * FROM Note WHERE title LIKE '%' || :key || '%'")
+    List<Note> getSearchNote(String key);
 
 }

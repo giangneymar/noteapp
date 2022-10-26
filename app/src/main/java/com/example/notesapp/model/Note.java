@@ -8,19 +8,12 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Note")
 public class Note implements Parcelable {
-    /*
-    Area : variable
-     */
 
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String title;
     private String content;
     private String date;
-
-    /*
-    Area : function
-     */
 
     protected Note(Parcel in) {
         id = in.readInt();
@@ -81,10 +74,6 @@ public class Note implements Parcelable {
             return new Note[size];
         }
     };
-
-    /*
-    Area : override
-     */
 
     @Override
     public int describeContents() {

@@ -11,15 +11,16 @@ import com.example.notesapp.R;
 import com.example.notesapp.databinding.ActivityWelcomeBinding;
 
 public class WelcomeActivity extends AppCompatActivity {
-    /*
-    Area : variable
-     */
 
     private ActivityWelcomeBinding binding;
 
-    /*
-    Area : function
-     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(WelcomeActivity.this, R.layout.activity_welcome);
+        setAnim();
+        welcomeDelay();
+    }
 
     private void setAnim() {
         binding.lottie.animate().setDuration(2000);
@@ -32,18 +33,6 @@ public class WelcomeActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
-        }, 3000);
-    }
-
-    /*
-    Area : override
-     */
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(WelcomeActivity.this, R.layout.activity_welcome);
-        setAnim();
-        welcomeDelay();
+        }, 1500);
     }
 }
