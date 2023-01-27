@@ -31,17 +31,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ItemHolder> {
 
         public void setData(Note note) {
             binding.title.setText(note.getTitle());
-            binding.content.setText(note.getContent());
-            binding.date.setText(note.getDate());
             onClick(note);
         }
 
         @SuppressLint("NotifyDataSetChanged")
         public void onClick(Note note) {
             binding.getRoot().setOnClickListener(view -> clickListener.onItemClick(note));
-            binding.delete.setOnClickListener(view -> {
-                clickListener.deleteNote(note);
-            });
             binding.getRoot().setOnLongClickListener(view -> {
                 clickListener.deleteNote(note);
                 return true;

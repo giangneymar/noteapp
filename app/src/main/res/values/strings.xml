@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ghi Chú</string>
+    <string name="app_name">Học Tiếng Anh</string>
     <string name="empty_note">Bạn Không Có Ghi Chú Nào !!!</string>
     <string name="title">Tiêu Đề</string>
     <string name="input_title">Nhập Tiêu Đề</string>
@@ -21,7 +21,7 @@
     <string name="back">Trở Lại</string>
     <string name="format_time">dd/MM/yyyy</string>
     <string name="format_time_short">dd/MM/yyyy</string>
-    <string name="good_morning">Chào buổi sáng</string>
-    <string name="good_afternoon">Buổi chiều vui vẻ nhé !!!</string>
-    <string name="good_evening">Tối rồi, bạn đang làm gì vậy ???</string>
+    <string name="good_morning">Good Morning</string>
+    <string name="good_afternoon">Have a nice afternoon !!!</string>
+    <string name="good_evening">It\'s night, what are you doing ???</string>
 </resources>

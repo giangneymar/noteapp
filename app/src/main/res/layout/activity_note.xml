@@ -71,6 +71,16 @@
             app:layout_constraintTop_toBottomOf="@id/search" />
 
         <ImageView
+            android:id="@+id/delete"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="30dp"
+            android:src="@drawable/ic_delete"
+            app:layout_constraintBottom_toTopOf="@id/add"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
             android:id="@+id/add"
             android:layout_width="50dp"
             android:layout_height="50dp"
